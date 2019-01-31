@@ -1,0 +1,41 @@
+#!/bin/bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+
+set -e            # fail fast
+set -o pipefail   # do not ignore exit codes when piping output
+set -x
+
+
+BUILD_DIR="$1"
+CACHE_DIR="$2"
+ENV_DIR="$3"
+ROOT=`cd $(dirname $0); cd ..; pwd`
+
+if [[ $CLEAR_CACHE -eq 1 ]] ; then
+  echo "Clearing the build cache"
+  rm -fr $CACHE_DIR/
+fi
+
+DIR="presto-server-${PRESTODB_VERSION}"
+TAR="${DIR}.tar.gz"
+TAR_URL="https://repo1.maven.org/maven2/com/facebook/presto/presto-server/${PRESTODB_VERSION}/${TAR}"
+
+if [ ! -e $CACHE_DIR/$TAR ]; then
+  if curl --output /dev/null --silent --head --fail $TAR_URL; then
+    echo "Downloading and caching prestoDb $PRESTODB_VERSION binary"
+    mkdir -p $CACHE_DIR
+    wget -O $CACHE_DIR/$TAR $TAR_URL
+  else
+    echo "Could not find $TAR"
+    exit 1
+  fi
+fi
+
+if [ ! -e $CACHE_DIR/$DIR ]; then
+  tar xvf $CACHE_DIR/$TAR -C $CACHE_DIR
+fi
+
+echo "Restoring cached $DIN"
+cp -rf $CACHE_DIR/$DIR $BUILD_DIR
+
+echo "Generating setting"

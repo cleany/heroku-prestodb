@@ -1,0 +1,4 @@
+#!/bin/bash
+# bin/detect <build-dir>
+
+echo "PrestoDb build pack made with ❤ by Cleany" && exit 0
