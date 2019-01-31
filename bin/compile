@@ -51,6 +51,7 @@ if [ ! -e $CACHE_DIR/$DIR ]; then
 fi
 
 echo "Restoring cached $DIN"
-cp -rf $CACHE_DIR/$DIR $BUILD_DIR
+cp -rf $CACHE_DIR/$DIR/* $BUILD_DIR
+ls -1 $BUILD_DIR/plugin | grep -E -v $PRESTODB_PLUGINS | xargs -I"{}" rm -rf $BUILD_DIR/plugin/{}
 
 echo "Generating setting"
